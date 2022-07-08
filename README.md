@@ -9,9 +9,18 @@
 6.  [Screenshots](#screenshots)
 ## Description
 ## Getting Started
-   - Dependencies
-   - Executing Material
+### Dependencies
+Python 3
+- ETL Library: Pandas
+- Machine Learning Library: Numpy
+- Natural Language Processing Library: NLTK
+- SQLite Database Library: SQLalchemy
+- Serialization Library: Pickle
+- Web App Library: Flask
+- Data Visualization Library: Plotly
+
 ## Authors
+### Charles Joseph
 ## License
 ## Acknowledgements
 ## Screenshots
