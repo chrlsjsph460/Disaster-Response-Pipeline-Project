@@ -38,7 +38,18 @@ There are three major components to this project.
 - Serialization Library: Pickle
 - Web App Library: Flask
 - Data Visualization Library: Plotly
-
+### Running the Code
+- Running the ETL Pipeline
+    1. Navigate to the project's data directory. 
+    2. In the terminal execute `python process_data.py disaster_messages.csv disaster_categories.csv clean_messages.db`
+- Running the ML Pipeline
+    1. Navigate to the project's models directory. 
+    2. In the terminal execute `python train_classifier.py ..\data\clean_messages.db saved_model.pkl`
+- Running the Web App
+    1. Navigate to the project's app directory. 
+    2. In the terminal execute `python run.py`
+    3. Visit [localhost:3001](http://localhost:3001/) to view the web app
+        
 ## Authors
      -Charles Joseph
 ## License
