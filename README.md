@@ -31,8 +31,8 @@ There are three major components to this project.
 ## Getting Started
 ### Dependencies
 - Python 3
-- ETL Library: Pandas
-- Machine Learning Library: Numpy
+- ETL Library: Pandas and Numpy
+- Machine Learning Library: Sklearn
 - Natural Language Processing Library: NLTK
 - SQLite Database Library: SQLalchemy
 - Serialization Library: Pickle
