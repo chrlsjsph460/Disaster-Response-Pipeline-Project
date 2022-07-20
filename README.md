@@ -42,9 +42,14 @@ There are three major components to this project.
 - Running the ETL Pipeline
     1. Navigate to the project's data directory. 
     2. In the terminal execute `python process_data.py disaster_messages.csv disaster_categories.csv clean_messages.db`
+    
 - Running the ML Pipeline
     1. Navigate to the project's models directory. 
     2. In the terminal execute `python train_classifier.py ..\data\clean_messages.db saved_model.pkl`
+    
+    ![Training Model](RunningTrainModel.PNG "Train Model")
+    *'child alone' column was dropped in training because it offered no information.*
+
 - Running the Web App
     1. Navigate to the project's app directory. 
     2. In the terminal execute `python run.py`
@@ -59,3 +64,5 @@ There are three major components to this project.
 - [Figure Eight](https://appen.com/) for providing Udacity with their data.
 
 ## Screenshots
+![Webapp Plots](PlotlyPlots.PNG "Webapp Plots")
+    *The plots show that there is a large disparity in the number of positive cases. It may be possible to improve model by using resampling methods but this would have to be completed for each output individually. Additionally, there are some examples with an unrealistic amount of words. These training examples can probably be deleted or word count can be added as a feature.*
