@@ -9,7 +9,8 @@ import nltk
 import re
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
-from nltk.stem.snowball import SnowballStemmer
+from nltk.stem.wordnet import WordNetLemmatizer
+#from nltk.stem.snowball import SnowballStemmer
 from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer, TfidfVectorizer
 
 #Machine Learning Models
@@ -192,7 +193,7 @@ def tokenize(text):
     Returns
     -----------
     words: list of words from text. non-alphanumerics are removed and string 
-    is split into words. Words are stemmed using the snowball stemmer.
+    is split into words. Words lemmatized using WordNetLemmatizer.
     
     '''
     
@@ -202,9 +203,8 @@ def tokenize(text):
     words = word_tokenize(text)
     #remove stop words
     words = [word for word in words if word not in set(stopwords.words("english"))]
-    #use stemmer
-    stemmer = SnowballStemmer(language="english")
-    words = [stemmer.stem(word) for word in words]
+    #reduce words to their root form
+    words =[WordNetLemmatizer().lemmatize(word) for word in words]
     return words
 
 
