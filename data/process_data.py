@@ -1,6 +1,8 @@
 import sys
 import pandas as pd
 import sqlalchemy as db
+import matplotlib.pyplot as plt
+import seaborn as sns
  
 
 def load_data(messages_filepath, categories_filepath):
@@ -32,7 +34,7 @@ def clean_data(df):
         # convert column from string to numeric
         categories[column] = [int(row) for row in categories[column]]
     # convert 2s in related column to 0 
-    categories.child_alone = [row if row ==1 else 0 for row in categories.child_alone]
+    categories.related = [row if row ==1 else 0 for row in categories.related]
     
     # drop the original categories column from `df`
     df.drop(["categories"], axis = 1, inplace = True)
@@ -44,15 +46,23 @@ def clean_data(df):
     # check number of duplicates
     duplicate_rows = sum(df_clean.duplicated())
     print("There are {} non-unique rows".format(duplicate_rows))
-
+    # plot_clean_df(df)
     return df_clean
-
-
+    
+# Everything is binarized now. It can be checked with this plot function    
+def plot_clean_df(df):
+    fig, axes = plt.subplots(6, 6, figsize=(6, 12))
+    categories = df.columns
+    for i in range(6):
+        for j in range(6):
+            sns.countplot(data=df, x=categories[j+i*6], ax=axes[i,j])
+    plt.show()
+    return None
+    
 def save_data(df, database_filename):
     engine = db.create_engine("sqlite:///"+database_filename)
     df.to_sql('Messages_Clean', engine, index=False, if_exists = "replace")
     pass  
-
 
 def main():
     if len(sys.argv) == 4:
