@@ -13,7 +13,7 @@ from nltk.stem.wordnet import WordNetLemmatizer
 #from nltk.stem.snowball import SnowballStemmer
 from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer, TfidfVectorizer
 
-#Machine Learning Models
+#Machine Learning Models and transformers
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import multilabel_confusion_matrix, plot_confusion_matrix
@@ -23,7 +23,7 @@ from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.pipeline import Pipeline, FeatureUnion
-
+from sklearn.preprocessing import StandardScaler
 
 #Metrics and Model Selection
 from sklearn.model_selection import train_test_split, GridSearchCV
@@ -211,18 +211,18 @@ def tokenize(text):
 
 def multiOutputFscore(Ytrue, Ypred):
     _, n = Ytrue.shape
-    scores = np.array([f1_score(Ytrue[:,i], Ypred[:,i]) for i in range(n)])
+    scores = np.array([f1_score(Ytrue[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
     return scores
 
 def multiOutputPrecision(Ytrue, Ypred):
     _, n = Ytrue.shape
-    scores = np.array([precision_score(Ytrue[:,i], Ypred[:,i], zero_division = 1) for i in range(n)])
+    scores = np.array([precision_score(Ytrue[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
     return scores
 
 
 def multiOutputRecall(Ytrue, Ypred):
     _, n = Ytrue.shape
-    scores = np.array([recall_score(Ytrue[:,i], Ypred[:,i]) for i in range(n)])
+    scores = np.array([recall_score(Ytrue[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
     return scores
 
 def rubricScores(Ytrue, Ypred):
@@ -239,17 +239,23 @@ def rubricScores(Ytrue, Ypred):
 def meanFscore(Ytrue, Ypred):
     _, n = Ytrue.shape
     scores = np.array([f1_score(Ytrue.iloc[:,i], Ypred[:,i]) for i in range(n)])
+    
+    # scores = multiOutputFscore(Ytrue, Ypred)
     return scores.mean()
 
 def meanPrecision(Ytrue, Ypred):
     _, n = Ytrue.shape
     scores = np.array([precision_score(Ytrue.iloc[:,i], Ypred[:,i], zero_division = 1) for i in range(n)])
+    
+    # scores = multiOutputPrecision(Ytrue, Ypred)
     return scores.mean()
 
 
 def meanRecall(Ytrue, Ypred):
     _, n = Ytrue.shape
     scores = np.array([recall_score(Ytrue.iloc[:,i], Ypred[:,i]) for i in range(n)])
+    
+    # scores = multiOutputRecall(Ytrue, Ypred)
     return scores.mean()
     
 F1_scorer = make_scorer(meanFscore, greater_is_better = True)
@@ -286,11 +292,10 @@ def build_model():
 
     ''' 
     #Create Multinomial NB instance for pipeline. It's a fast model. 
-    model = CustomMultiOutputClassifier(MultinomialNB())
-  
+    # model = CustomMultiOutputClassifier(MultinomialNB())
+    model = CustomMultiOutputClassifier(LogisticRegression(class_weight = 'balanced', solver = "newton-cg"))
     # create scoring function
-    # Use hamming score. It's like partial accuracy. Ex. (This is multioutput) y = (1,1,0) yhat = (1,1,1) 
-    # scorer returns 2/3 because 2 out of three outputs are correct
+    #Use f1 score to assess model usefulness. This is a balance of precision and recall_score
     
     ############ Other Scorers ###############################################
     # F1_scorer = make_scorer(meanFscore, greater_is_better = True)
@@ -299,14 +304,18 @@ def build_model():
     ##########################################################################
     hamming_scorer = make_scorer(hamming_loss, greater_is_better = False)
     scoring = {"Hamming": hamming_scorer}
+    # scoring = {"F1":F1_scorer}
     
     # Create innerPipeline and gridsearch. This is for the ml model's parameters. 
     # inner pipeline and gridsearch
     innerPipeline = Pipeline([('tfidf',TfidfTransformer()),('clf', model)])     
-    innerParameters = {'clf__model__alpha':np.linspace(0.01, 0.50, 50)}   
-    innerScoring = {"Hamming":hamming_scorer}
-    innerSearch = GridSearchCV(innerPipeline, innerParameters, scoring = innerScoring, return_train_score=True, refit = "Hamming", n_jobs = 3, verbose = 0)
-    
+    # innerParameters = {'clf__model__alpha':np.linspace(0.01, 0.50, 50)}   
+    innerParameters = {'clf__model__C': np.logspace(-3.0, 3.0, num=50) } 
+    # innerScoring = {"F1": F1_scorer}
+    # innerScoring = {"Hamming":hamming_scorer}
+    # innerSearch = GridSearchCV(innerPipeline, innerParameters, scoring = innerScoring, return_train_score=True, refit = "Hamming", n_jobs = 3, verbose = 0)
+    innerSearch = GridSearchCV(innerPipeline, innerParameters, scoring = scoring, return_train_score=True, refit = "Hamming", n_jobs = 3, verbose = 0)
+
 
     # outer pipeline and gridsearch
     outerPipeline = Pipeline([('vect',CountVectorizer(tokenizer = tokenize)),('innerCV', innerSearch)])       
@@ -359,8 +368,8 @@ def train_model(X, Y, model):
     
     outerParameters = []
     for gram in [(1,2)]:
-        for mind in [5,6,7,8]:
-            for maxd in [.80, .85, 0.90]:
+        for mind in [5]: #[5,6,7,8]:
+            for maxd in [.80]:#, .85, 0.90]:
                 outerParameters.append({'vect__ngram_range': gram, 'vect__min_df': mind, 'vect__max_df':maxd})
             
     best_score = -np.inf
