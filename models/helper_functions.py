@@ -15,7 +15,7 @@ from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer, T
 
 #Machine Learning Models and transformers
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.base import BaseEstimator, ClassifierMixin
+from sklearn.base import BaseEstimator, ClassifierMixin, TransformerMixin
 from sklearn.metrics import multilabel_confusion_matrix, plot_confusion_matrix
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.linear_model import LogisticRegression
@@ -43,6 +43,7 @@ import time
 hamming_scorer = make_scorer(hamming_loss, greater_is_better = False)
 
 #More insightful feature. Is the first tag a verb???
+#Didn't figure out how to union this with my current set up without countvectorizing more than necessary
 class StartingVerbExtractor(BaseEstimator, TransformerMixin):
 
     def starting_verb(self, text):
@@ -382,8 +383,8 @@ def train_model(X, Y, model):
     
     outerParameters = []
     for gram in [(1,2)]:
-        for mind in [5]: #[5,6,7,8]:
-            for maxd in [.80]:#, .85, 0.90]:
+        for mind in [5, 6]: 
+            for maxd in [.80, 0.85, .90]:
                 outerParameters.append({'vect__ngram_range': gram, 'vect__min_df': mind, 'vect__max_df':maxd})
             
     best_score = -np.inf
@@ -403,7 +404,8 @@ def train_model(X, Y, model):
         stop = time.time()
         print(f"time taken: {stop - start}")
     
-
+    print("Evaluating model on test data ....")
+    print(evaluate_model(model_, X_test, Y_test))
     return model_
 
 
