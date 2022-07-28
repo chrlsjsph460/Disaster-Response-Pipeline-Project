@@ -237,25 +237,19 @@ def rubricScores(Ytrue, Ypred):
 
 
 def meanFscore(Ytrue, Ypred):
-    _, n = Ytrue.shape
-    scores = np.array([f1_score(Ytrue.iloc[:,i], Ypred[:,i]) for i in range(n)])
     
-    # scores = multiOutputFscore(Ytrue, Ypred)
+    scores = multiOutputFscore(Ytrue, Ypred)
     return scores.mean()
 
 def meanPrecision(Ytrue, Ypred):
-    _, n = Ytrue.shape
-    scores = np.array([precision_score(Ytrue.iloc[:,i], Ypred[:,i], zero_division = 1) for i in range(n)])
     
-    # scores = multiOutputPrecision(Ytrue, Ypred)
+    scores = multiOutputPrecision(Ytrue, Ypred)
     return scores.mean()
 
 
 def meanRecall(Ytrue, Ypred):
-    _, n = Ytrue.shape
-    scores = np.array([recall_score(Ytrue.iloc[:,i], Ypred[:,i]) for i in range(n)])
-    
-    # scores = multiOutputRecall(Ytrue, Ypred)
+   
+    scores = multiOutputRecall(Ytrue, Ypred)
     return scores.mean()
     
 F1_scorer = make_scorer(meanFscore, greater_is_better = True)
@@ -311,10 +305,10 @@ def build_model():
     innerPipeline = Pipeline([('tfidf',TfidfTransformer()),('clf', model)])     
     # innerParameters = {'clf__model__alpha':np.linspace(0.01, 0.50, 50)}   
     innerParameters = {'clf__model__C': np.logspace(-3.0, 3.0, num=50) } 
-    # innerScoring = {"F1": F1_scorer}
+    innerScoring = {"F1": F1_scorer}
     # innerScoring = {"Hamming":hamming_scorer}
     # innerSearch = GridSearchCV(innerPipeline, innerParameters, scoring = innerScoring, return_train_score=True, refit = "Hamming", n_jobs = 3, verbose = 0)
-    innerSearch = GridSearchCV(innerPipeline, innerParameters, scoring = scoring, return_train_score=True, refit = "Hamming", n_jobs = 3, verbose = 0)
+    innerSearch = GridSearchCV(innerPipeline, innerParameters, scoring = innerScoring, return_train_score=True, refit = "F1", n_jobs = 3, verbose = 0)
 
 
     # outer pipeline and gridsearch
