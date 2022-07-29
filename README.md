@@ -58,7 +58,7 @@ There are three major components to this project.
 ## Authors
      -Charles Joseph
 ## License
-[MIT OPENSOURCE LICENSE](https://opensource.org/licenses/MIT)
+[MIT OPENSOURCE LICENSE](LICENSE.TXT)
 ## Acknowledgements
 - [Udacity](https://www.udacity.com/) for designing the project, providing disaster response files and templates. 
 - [Figure Eight](https://appen.com/) for providing Udacity with their data.
