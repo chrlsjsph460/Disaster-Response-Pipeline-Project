@@ -67,5 +67,5 @@ There are three major components to this project.
 ## Screenshots
 ![Webapp Plots](PlotlyPlots.PNG "Webapp Plots")
     *The plots show that there is a large disparity in the number of positive cases. It may be possible to improve model by using resampling methods. Additionally, there are some examples with an unrealistic amount of words. These training examples can probably be deleted or word count can be added as a feature.*
-![Webapp Search](RunSearch.PNG "Webapp Search")
+![Webapp Search](RunSearchSmoke.PNG "Webapp Search")
 *Direct report was also selected but the entire screen could not be captured.*
