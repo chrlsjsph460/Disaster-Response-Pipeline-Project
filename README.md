@@ -27,7 +27,7 @@ There are three major components to this project.
     - Visualizes dataset 
     - Applies model to new data to make predictions
 
-**Show screenshots of web app here. **
+
 ## Getting Started
 ### Dependencies
 - Python 3
@@ -46,10 +46,11 @@ There are three major components to this project.
 - Running the ML Pipeline
     1. Navigate to the project's models directory. 
     2. In the terminal execute `python train_classifier.py ..\data\clean_messages.db saved_model.pkl`
+    3. To view model scores, execute `python eval_model.py`.  
     
-    ![Training Model](RunningTrainModel.PNG "Train Model")
-    *'child alone' column was dropped in training because it offered no information.*
-
+    ![Model Scores](ModelScores.PNG "Model F1, Precision, and Recall by category")
+    
+    *Using the `class_weight = "balanced"` parameter greatly improved model performance.* 
 - Running the Web App
     1. Navigate to the project's app directory. 
     2. In the terminal execute `python run.py`
@@ -65,6 +66,6 @@ There are three major components to this project.
 
 ## Screenshots
 ![Webapp Plots](PlotlyPlots.PNG "Webapp Plots")
-    *The plots show that there is a large disparity in the number of positive cases. It may be possible to improve model by using resampling methods but this would have to be completed for each output individually. Alternatively, a model or models that utilizes the class_weight parameter can be used to account for the disparity in the number of positive cases. This will be done at a later date. Additionally, there are some examples with an unrealistic amount of words. These training examples can probably be deleted or word count can be added as a feature.*
+    *The plots show that there is a large disparity in the number of positive cases. It may be possible to improve model by using resampling methods. Additionally, there are some examples with an unrealistic amount of words. These training examples can probably be deleted or word count can be added as a feature.*
 ![Webapp Search](RunSearch.PNG "Webapp Search")
 *Direct report was also selected but the entire screen could not be captured.*
