@@ -50,7 +50,7 @@ There are three major components to this project.
     
     ![Model Scores](ModelScores.PNG "Model F1, Precision, and Recall by category")
     
-    *Using the `class_weight = "balanced"` parameter greatly improved model performance.* 
+    * Using the `class_weight = "balanced"` parameter greatly improved model performance. `child_alone` scores are 0.0 because no positive cases were provided. It is  benefical to find examples elsewhere.  
 - Running the Web App
     1. Navigate to the project's app directory. 
     2. In the terminal execute `python run.py`
