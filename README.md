@@ -49,8 +49,9 @@ There are three major components to this project.
     3. To view model scores, execute `python eval_model.py`.  
     
     ![Model Scores](ModelScores.PNG "Model F1, Precision, and Recall by category")
+
+    *Using the `class_weight = "balanced"` parameter greatly improved model performance. `child_alone` scores are 0.0 because no positive cases were provided. It is  benefical to find examples elsewhere.*
     
-    * Using the `class_weight = "balanced"` parameter greatly improved model performance. `child_alone` scores are 0.0 because no positive cases were provided. It is  benefical to find examples elsewhere.  
 - Running the Web App
     1. Navigate to the project's app directory. 
     2. In the terminal execute `python run.py`
@@ -66,6 +67,8 @@ There are three major components to this project.
 
 ## Screenshots
 ![Webapp Plots](PlotlyPlots.PNG "Webapp Plots")
-    *The plots show that there is a large disparity in the number of positive cases. It may be possible to improve model by using resampling methods. Additionally, there are some examples with an unrealistic amount of words. These training examples can probably be deleted or word count can be added as a feature.*
+*The plots show that there is a large disparity in the number of positive cases. It may be possible to improve model by using resampling methods. Additionally, there are some examples with an unrealistic amount of words. These training examples can probably be deleted or word count can be added as a feature.*
+
 ![Webapp Search](RunSearchSmoke.PNG "Webapp Search")
-*Direct report was also selected but the entire screen could not be captured.*
+
+*A simple example: "there is smoke" was flagged as related, direct report, and fire.*
