@@ -232,18 +232,18 @@ def tokenize(text):
 
 def multiOutputFscore(Ytrue, Ypred):
     _, n = Ytrue.shape
-    scores = np.array([f1_score(Ytrue.iloc[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
+    scores = np.array([f1_score(Ytrue[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
     return scores
 
 def multiOutputPrecision(Ytrue, Ypred):
     _, n = Ytrue.shape
-    scores = np.array([precision_score(Ytrue.iloc[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
+    scores = np.array([precision_score(Ytrue[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
     return scores
 
 
 def multiOutputRecall(Ytrue, Ypred):
     _, n = Ytrue.shape
-    scores = np.array([recall_score(Ytrue.iloc[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
+    scores = np.array([recall_score(Ytrue[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
     return scores
 
 def rubricScores(Ytrue, Ypred):
@@ -259,18 +259,18 @@ def rubricScores(Ytrue, Ypred):
 
 def meanFscore(Ytrue, Ypred):
     
-    scores = multiOutputFscore(Ytrue, Ypred)
+    scores = multiOutputFscore(Ytrue.values, Ypred)
     return scores.mean()
 
 def meanPrecision(Ytrue, Ypred):
     
-    scores = multiOutputPrecision(Ytrue, Ypred)
+    scores = multiOutputPrecision(Ytrue.values, Ypred)
     return scores.mean()
 
 
 def meanRecall(Ytrue, Ypred):
    
-    scores = multiOutputRecall(Ytrue, Ypred)
+    scores = multiOutputRecall(Ytrue.values, Ypred)
     return scores.mean()
     
 F1_scorer = make_scorer(meanFscore, greater_is_better = True)
@@ -308,9 +308,13 @@ def build_model():
     ''' 
     #Create Multinomial NB instance for pipeline. It's a fast model. 
     # model = CustomMultiOutputClassifier(MultinomialNB())
+    # innerPipeline = Pipeline([('tfidf',TfidfTransformer()),('clf', model)])  
+    # innerParameters = {'clf__model__alpha':np.linspace(0.01, 0.50, 50)} 
+    
+    # use logistic regression because it has the class_weight parameter
     model = CustomMultiOutputClassifier(LogisticRegression(class_weight = 'balanced', solver = "newton-cg"))
     # create scoring function
-    #Use f1 score to assess model usefulness. This is a balance of precision and recall_score
+    # using F1 scorer was troublesome so I stuck with Hamming scorer
     
     ############ Other Scorers ###############################################
     # F1_scorer = make_scorer(meanFscore, greater_is_better = True)
@@ -324,12 +328,8 @@ def build_model():
     # Create innerPipeline and gridsearch. This is for the ml model's parameters. 
     # inner pipeline and gridsearch
     innerPipeline = Pipeline([('tfidf',TfidfTransformer()),('clf', model)])     
-    # innerParameters = {'clf__model__alpha':np.linspace(0.01, 0.50, 50)}   
-    innerParameters = {'clf__model__C': np.logspace(-3.0, 3.0, num=50) } 
-    innerScoring = {"F1": F1_scorer}
-    # innerScoring = {"Hamming":hamming_scorer}
-    # innerSearch = GridSearchCV(innerPipeline, innerParameters, scoring = innerScoring, return_train_score=True, refit = "Hamming", n_jobs = 3, verbose = 0)
-    innerSearch = GridSearchCV(innerPipeline, innerParameters, scoring = innerScoring, return_train_score=True, refit = "F1", n_jobs = 3, verbose = 0)
+    innerParameters = {'clf__model__C': np.logspace(-3.0, 3.0, num=100) } 
+    innerSearch = GridSearchCV(innerPipeline, innerParameters, scoring = scoring, return_train_score=True, refit = "Hamming", n_jobs = 3, verbose = 0)
 
 
     # outer pipeline and gridsearch
@@ -384,7 +384,7 @@ def train_model(X, Y, model):
     outerParameters = []
     for gram in [(1,2)]:
         for mind in [5]: 
-            for maxd in [.80, 0.85]:
+            for maxd in [.80]:
                 outerParameters.append({'vect__ngram_range': gram, 'vect__min_df': mind, 'vect__max_df':maxd})
             
     best_score = -np.inf
@@ -404,8 +404,7 @@ def train_model(X, Y, model):
         stop = time.time()
         print(f"time taken: {stop - start}")
     
-    print("Evaluating model on test data ....")
-    print(evaluate_model(model_, X_test, Y_test))
+
     return model_
 
 
