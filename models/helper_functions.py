@@ -232,18 +232,18 @@ def tokenize(text):
 
 def multiOutputFscore(Ytrue, Ypred):
     _, n = Ytrue.shape
-    scores = np.array([f1_score(Ytrue[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
+    scores = np.array([f1_score(Ytrue.iloc[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
     return scores
 
 def multiOutputPrecision(Ytrue, Ypred):
     _, n = Ytrue.shape
-    scores = np.array([precision_score(Ytrue[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
+    scores = np.array([precision_score(Ytrue.iloc[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
     return scores
 
 
 def multiOutputRecall(Ytrue, Ypred):
     _, n = Ytrue.shape
-    scores = np.array([recall_score(Ytrue[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
+    scores = np.array([recall_score(Ytrue.iloc[:,i], Ypred[:,i], zero_division = 0) for i in range(n)])
     return scores
 
 def rubricScores(Ytrue, Ypred):
@@ -383,8 +383,8 @@ def train_model(X, Y, model):
     
     outerParameters = []
     for gram in [(1,2)]:
-        for mind in [5, 6]: 
-            for maxd in [.80, 0.85, .90]:
+        for mind in [5]: 
+            for maxd in [.80, 0.85]:
                 outerParameters.append({'vect__ngram_range': gram, 'vect__min_df': mind, 'vect__max_df':maxd})
             
     best_score = -np.inf
